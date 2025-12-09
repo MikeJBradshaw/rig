@@ -1,0 +1,52 @@
+name: Deploy SPA to AWS Prod
+
+on:
+  push:
+    branches:
+      - master   # Only master triggers prod deploy
+
+permissions:
+  id-token: write   # Required for OIDC
+  contents: read
+
+jobs:
+  deploy:
+    name: Build & Deploy SPA to AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build SPA
+        run: npm run build
+
+      # --- AWS Auth via OIDC ---
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::605881124246:role/rig-spa-prod-deploy-role
+          aws-region: us-east-1
+
+      # --- Deploy to S3 ---
+      - name: Sync build artifacts to S3
+        run: |
+          aws s3 sync dist/ s3://rig-spa-prod/ \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable"
+
+      # --- Invalidate CloudFront ---
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E3T8MJH4CKYPJ9 \
+            --paths "/*"
+
