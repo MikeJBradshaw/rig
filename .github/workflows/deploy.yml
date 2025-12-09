@@ -3,10 +3,10 @@ name: Deploy SPA to AWS Prod
 on:
   push:
     branches:
-      - master   # Only master triggers prod deploy
+      - master   # deploy only on master
 
 permissions:
-  id-token: write   # Required for OIDC
+  id-token: write
   contents: read
 
 jobs:
@@ -18,35 +18,49 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Node
+      - name: Use Node 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm ci
+      # -------------------------------------------------
+      # INSTALL DEPENDENCIES (YARN CLASSIC)
+      # -------------------------------------------------
+      - name: Install deps with Yarn
+        working-directory: services/ui
+        run: yarn install --frozen-lockfile
 
+      # -------------------------------------------------
+      # BUILD SPA
+      # -------------------------------------------------
       - name: Build SPA
-        run: npm run build
+        working-directory: services/ui
+        run: yarn build
 
-      # --- AWS Auth via OIDC ---
+      # -------------------------------------------------
+      # AWS AUTH (OIDC)
+      # -------------------------------------------------
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::605881124246:role/rig-spa-prod-deploy-role
           aws-region: us-east-1
 
-      # --- Deploy to S3 ---
-      - name: Sync build artifacts to S3
+      # -------------------------------------------------
+      # DEPLOY TO S3
+      # -------------------------------------------------
+      - name: Sync dist to S3
         run: |
-          aws s3 sync dist/ s3://rig-spa-prod/ \
+          aws s3 sync services/ui/dist s3://rig-spa-prod \
             --delete \
             --cache-control "public,max-age=31536000,immutable"
 
-      # --- Invalidate CloudFront ---
-      - name: Invalidate CloudFront cache
+      # -------------------------------------------------
+      # INVALIDATE CLOUDFRONT CACHE
+      # -------------------------------------------------
+      - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id E3T8MJH4CKYPJ9 \
+            --distribution-id E3T8WJH4KCYPJ9 \
             --paths "/*"
 
