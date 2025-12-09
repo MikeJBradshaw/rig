@@ -1,4 +1,11 @@
 {
   "name": "rig",
-  "packageManager": "yarn@4.4.1"
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Mike Bradshaw <mjbradshaw87@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "services/*"
+  ]
 }
