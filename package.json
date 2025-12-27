@@ -1,11 +1,24 @@
 {
   "name": "rig",
-  "version": "0.0.1",
-  "main": "index.js",
   "author": "Mike Bradshaw <mjbradshaw87@gmail.com>",
-  "license": "MIT",
+  "type": "module",
+  "license":"SEE LICENSE IN LICENSE",
   "private": true,
   "workspaces": [
+    "packages/*",
     "services/*"
-  ]
+  ],
+  "scripts": {
+    "build:schema": "yarn workspace @rig/schema build",
+    "build:logger": "yarn workspace @rig/logger build",
+    "build:secrets": "yarn workspace @rig/secrets build",
+    "build:db": "yarn workspace @rig/db build",
+    "build:api": "yarn workspace @rig/api build",
+
+    "clean:schema":"rm -rf ./packages/schema/dist/*",
+    "clean:db":"rm -rf ./packages/db/dist/*",
+
+    "db:down": "yarn workspace @rig/db migrate:down",
+    "db:up": "yarn workspace @rig/db migrate:up"
+  }
 }

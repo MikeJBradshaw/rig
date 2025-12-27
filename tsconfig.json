@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+        "@rig/schema": ["packages/schema/src/index.ts"],
+        "@rig/schema/identity": [
+            "packages/schema/src/identity/index.ts"
+        ],
+        "@rig/schema/identity/*": [
+            "packages/schema/src/identity/*"
+        ],
+        "@rig/db": ["packages/db/src/index.ts"],
+        "@rig/db/client": [
+            "packages/db/src/client/index.ts"
+        ],
+        "@rig/db/client/*": [
+            "packages/db/src/client/*"
+        ],
+        "@rig/logger": ["packages/logger/src/index.ts"],
+        "@rig/secrets": ["packages/secrets/src/index.ts"],
+    }
+  },
+  "exclude": ["**/dist", "**/node_modules"]
+}
+
