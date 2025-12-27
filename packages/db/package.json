@@ -1,0 +1,27 @@
+{
+  "name": "@rig/db",
+  "version": "0.0.1",
+  "module": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist/*",
+    "migrate:up": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage"
+  },
+  "dependencies": {
+    "@rig/schema": "0.0.1",
+    "@rig/logger": "0.0.1",
+    "node-pg-migrate": "^8.0.4",
+    "pg": "^8.16.3",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.16"
+  }
+}
